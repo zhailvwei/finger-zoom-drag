@@ -52,13 +52,22 @@ Vue.use(AlloyFingerVue, { AlloyFinger });
         required: true,
         default: 0,
       },
+      x: {
+        type: Number,
+        default: 0,
+      },
+      y: {
+        type: Number,
+        default: 0,
+      },
+      scale: {
+        type: Number,
+        default: 1,
+      },
     },
     data () {
       return {
-        scaleX: 1,
-        lastScaleX: 1,
-        x: 0,
-        y: 0,
+        lastScale: this.scale,
       }
     },
     methods: {
@@ -72,7 +81,7 @@ Vue.use(AlloyFingerVue, { AlloyFinger });
         } else if ( x < minX ) {
           x = minX;
         }
-        this.x = x;
+        this.$emit('update:x', x);
 
         let y = this.y + evt.deltaY;
         if ( y > maxY ) {
@@ -80,29 +89,29 @@ Vue.use(AlloyFingerVue, { AlloyFinger });
         } else if ( y < minY ) {
           y = minY;
         }
-        this.y = y;
+        this.$emit('update:y', y);
         
       },
       pinchStart: function () {
-        this.lastScaleX = this.scaleX;
+        this.lastScale = this.scale;
       },
       pinch: function(evt) {
         evt.preventDefault();
         
-        let scale = this.lastScaleX * evt.zoom;
+        let scale = this.lastScale * evt.zoom;
         if ( scale > this.maxScale ) {
           scale = this.maxScale
         } else if ( scale < this.minScale ) {
           scale = this.minScale;
         }
-        this.scaleX = scale;
+        this.$emit('update:scale', scale);
       },
     },
     computed: {
       style() {
         return {
-          transform: `translate3d(${this.x}px, ${this.y}px, 0) scale(${this.scaleX})`,
-          '-webkit-transform': `translate3d(${this.x}px, ${this.y}px, 0) scale(${this.scaleX})`
+          transform: `translate3d(${this.x}px, ${this.y}px, 0) scale(${this.scale})`,
+          '-webkit-transform': `translate3d(${this.x}px, ${this.y}px, 0) scale(${this.scale})`
         };
       },
     }
